@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "AI Prompt Broadcaster",
+  "version": "1.0",
+  "description": "Opens multiple AI chat sites and pastes the same prompt.",
+  "permissions": [
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/",
+    "https://gemini.google.com/",
+    "https://claude.ai/",
+    "https://www.perplexity.ai/"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}
