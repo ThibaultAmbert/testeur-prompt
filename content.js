@@ -12,7 +12,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           callback(element);
         } else if (Date.now() - startTime > timeout) {
           obs.disconnect();
-          console.error(`[AI Broadcaster] Element with selector "${selector}" not found on ${url} after ${timeout}ms.`);
+          const errorMessage = `Element with selector "${selector}" not found on ${url} after ${timeout}ms.`;
+          console.error(`[AI Broadcaster] ${errorMessage}`);
+          sendResponse({status: "error", message: errorMessage, site: url});
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });
@@ -63,7 +65,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (true) {
       case url.includes('chatgpt.com'):
         fillAndClick(
-            'textarea[id="prompt-textarea"]',
+            'div[id="prompt-textarea"]',
             'button[data-testid="send-button"]',
             prompt
         );
@@ -71,8 +73,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('gemini.google.com'):
         fillAndClick(
-            '.ql-editor.ql-blank',
-            'button.send-btn',
+            'div.ql-editor[role="textbox"]',
+            'button[aria-label*="Envoyer un message"]',
             prompt
         );
         break;
@@ -80,7 +82,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       case url.includes('claude.ai'):
         fillAndClick(
             'div.ProseMirror',
-            'button[aria-label*="Send Message"]',
+            'button[aria-label="Envoyer le message"]',
             prompt,
             300 // Add a 300ms delay for Claude
         );
@@ -88,7 +90,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('perplexity.ai'):
         fillAndClick(
-            'textarea[placeholder*="Ask anything..."]',
+            'div[id="ask-input"]',
             'button[aria-label="Submit"]',
             prompt
         );
