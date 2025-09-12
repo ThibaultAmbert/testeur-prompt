@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (true) {
       case url.includes('chatgpt.com'):
         fillAndClick(
-            'textarea[placeholder*="Message"]',
+            'textarea[id="prompt-textarea"]',
             'button[data-testid="send-button"]',
             prompt
         );
@@ -71,16 +71,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('gemini.google.com'):
         fillAndClick(
-            '.query-box [role="textbox"]',
-            'button.send-button',
+            '.ql-editor.ql-blank',
+            'button.send-btn',
             prompt
         );
         break;
 
       case url.includes('claude.ai'):
         fillAndClick(
-            'div[contenteditable="true"]',
-            'button[aria-label*="Send"]',
+            'div.ProseMirror',
+            'button[aria-label*="Send Message"]',
             prompt,
             300 // Add a 300ms delay for Claude
         );
@@ -88,7 +88,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('perplexity.ai'):
         fillAndClick(
-            'textarea[placeholder*="Ask"]',
+            'textarea[placeholder*="Ask anything..."]',
             'button[aria-label="Submit"]',
             prompt
         );
