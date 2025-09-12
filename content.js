@@ -35,7 +35,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     const simulateContentEditableInput = (element, text) => {
         element.focus();
-        element.innerHTML = text;
+        // Wrap text in a paragraph tag to better support rich text editors
+        element.innerHTML = `<p>${text}</p>`;
         element.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
         element.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
     };
