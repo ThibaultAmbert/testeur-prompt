@@ -35,17 +35,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     const simulateContentEditableInput = (element, text) => {
         element.focus();
-        // Set the text content directly.
-        element.textContent = text;
-        // Create and dispatch an InputEvent to simulate user typing.
-        // This is more reliable for modern frameworks like React.
-        const event = new InputEvent('input', {
+        // Simulate a 'paste' event, which is often more reliable for rich text editors.
+        const dataTransfer = new DataTransfer();
+        dataTransfer.setData('text/plain', text);
+        const pasteEvent = new ClipboardEvent('paste', {
             bubbles: true,
             cancelable: true,
-            inputType: 'insertText',
-            data: text,
+            clipboardData: dataTransfer,
         });
-        element.dispatchEvent(event);
+        element.dispatchEvent(pasteEvent);
     };
 
     const fillAndClick = (inputSelector, buttonSelector, text, clickDelay = 100) => {
@@ -97,12 +95,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
 
       case url.includes('perplexity.ai'):
-        fillAndClick(
-            'div[id="ask-input"]',
-            'button[data-testid="submit-button"]',
-            prompt,
-            300 // Add a 300ms delay for Perplexity
-        );
+        // Per user request, only fill the input for now to debug.
+        // The simulateContentEditableInput function now uses a 'paste' event.
+        waitForElement('div[id="ask-input"]', (input) => {
+          simulateContentEditableInput(input, prompt);
+          sendResponse({status: "success", site: url, message: "Paste event dispatched."});
+        });
         break;
     }
 
