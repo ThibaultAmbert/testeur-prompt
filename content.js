@@ -35,10 +35,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     const simulateContentEditableInput = (element, text) => {
         element.focus();
-        // Wrap text in a paragraph tag to better support rich text editors
-        element.innerHTML = `<p>${text}</p>`;
-        element.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+        // Set the text content directly.
+        element.textContent = text;
+        // Create and dispatch an InputEvent to simulate user typing.
+        // This is more reliable for modern frameworks like React.
+        const event = new InputEvent('input', {
+            bubbles: true,
+            cancelable: true,
+            inputType: 'insertText',
+            data: text,
+        });
+        element.dispatchEvent(event);
     };
 
     const fillAndClick = (inputSelector, buttonSelector, text, clickDelay = 100) => {
@@ -90,11 +97,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
 
       case url.includes('perplexity.ai'):
-        // Only fill the input for now, to debug.
-        waitForElement('div[id="ask-input"]', (input) => {
-          simulateContentEditableInput(input, prompt);
-          sendResponse({status: "success", site: url, message: "Input filled."});
-        });
+        fillAndClick(
+            'div[id="ask-input"]',
+            'button[data-testid="submit-button"]',
+            prompt,
+            300 // Add a 300ms delay for Perplexity
+        );
         break;
     }
 
