@@ -90,12 +90,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
 
       case url.includes('perplexity.ai'):
-        fillAndClick(
-            'div[id="ask-input"]',
-            'button[data-testid="submit-button"]',
-            prompt,
-            300 // Add a 300ms delay for Perplexity
-        );
+        // Only fill the input for now, to debug.
+        waitForElement('div[id="ask-input"]', (input) => {
+          simulateContentEditableInput(input, prompt);
+          sendResponse({status: "success", site: url, message: "Input filled."});
+        });
         break;
     }
 
