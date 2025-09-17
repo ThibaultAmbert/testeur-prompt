@@ -91,8 +91,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('perplexity.ai'):
         fillAndClick(
-            'div[id="ask-input"]',
-            'button[aria-label="Submit"]',
+            'textarea',
+            'button[aria-label*="Submit"]',
             prompt
         );
         break;
