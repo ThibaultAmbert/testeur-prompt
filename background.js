@@ -4,16 +4,10 @@ const tabPrompts = new Map();
 
 // 1. Listen for the message from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.prompt) {
-    const urls = [
-      "https://chatgpt.com/",
-      "https://gemini.google.com/app?hl=fr",
-      "https://claude.ai/new",
-      "https://www.perplexity.ai/"
-    ];
-
-    // 2. Create a new tab for each URL
-    urls.forEach(url => {
+  // Ensure the message contains both a prompt and an array of URLs
+  if (request.prompt && request.urls && Array.isArray(request.urls)) {
+    // 2. Create a new tab for each URL sent from the popup
+    request.urls.forEach(url => {
       chrome.tabs.create({ url: url, active: false }, (tab) => {
         // Store the prompt for this specific tab's ID
         tabPrompts.set(tab.id, request.prompt);
