@@ -91,9 +91,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('perplexity.ai'):
         fillAndClick(
-            'textarea',
-            'button[aria-label*="Submit"]',
-            prompt
+            'div[id="ask-input"]',
+            'button[data-testid="submit-button"]',
+            prompt,
+            300 // Add a 300ms delay for Perplexity
         );
         break;
     }
