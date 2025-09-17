@@ -35,7 +35,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     const simulateContentEditableInput = (element, text) => {
         element.focus();
-        // Simulate a 'paste' event, which is often more reliable for rich text editors.
+        // Wrap text in a paragraph tag to better support rich text editors
+        element.innerHTML = `<p>${text}</p>`;
+        element.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+    };
+
+    const simulatePaste = (element, text) => {
+        element.focus();
+        // Simulate a 'paste' event, which is more reliable for some rich text editors.
         const dataTransfer = new DataTransfer();
         dataTransfer.setData('text/plain', text);
         const pasteEvent = new ClipboardEvent('paste', {
@@ -95,11 +103,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
 
       case url.includes('perplexity.ai'):
-        // Per user request, only fill the input for now to debug.
-        // The simulateContentEditableInput function now uses a 'paste' event.
         waitForElement('div[id="ask-input"]', (input) => {
-          simulateContentEditableInput(input, prompt);
-          sendResponse({status: "success", site: url, message: "Paste event dispatched."});
+          simulatePaste(input, prompt);
+
+          // Now that input is filled, wait for the button and click it.
+          waitForElement('button[data-testid="submit-button"]', (button) => {
+            setTimeout(() => {
+              if (!button.disabled) {
+                button.click();
+                sendResponse({status: "success", site: url});
+              } else {
+                console.error(`[AI Broadcaster] Button on Perplexity is disabled.`);
+                sendResponse({status: "error", message: "Button is disabled", site: url});
+              }
+            }, 300); // 300ms delay for UI to update.
+          });
         });
         break;
     }
