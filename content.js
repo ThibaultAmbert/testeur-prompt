@@ -103,12 +103,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
 
       case url.includes('chat.mistral.ai'):
-        fillAndClick(
-            'div.ProseMirror[data-placeholder*="Posez n\'importe quelle question"]',
-            'button[aria-label="Send question"]',
-            prompt,
-            300 // Add a delay for Mistral UI to update
-        );
+        waitForElement('div.ProseMirror[data-placeholder*="Posez n\'importe quelle question"]', (input) => {
+          input.focus();
+          document.execCommand('insertText', false, prompt);
+
+          // Now that input is filled, wait for the button and click it.
+          waitForElement('button[aria-label="Send question"]', (button) => {
+            setTimeout(() => {
+              if (!button.disabled) {
+                button.click();
+                sendResponse({status: "success", site: url});
+              } else {
+                console.error(`[AI Broadcaster] Button on Mistral is disabled.`);
+                sendResponse({status: "error", message: "Button is disabled", site: url});
+              }
+            }, 300); // 300ms delay for UI to update.
+          });
+        });
         break;
 
       case url.includes('perplexity.ai'):
