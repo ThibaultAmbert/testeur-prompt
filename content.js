@@ -104,9 +104,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       case url.includes('chat.mistral.ai'):
         fillAndClick(
-            'textarea[placeholder="Send a message..."]',
-            'button[aria-label="Send message"]',
-            prompt
+            'div.ProseMirror[data-placeholder*="Posez n\'importe quelle question"]',
+            'button[aria-label="Send question"]',
+            prompt,
+            300 // Add a delay for Mistral UI to update
         );
         break;
 
