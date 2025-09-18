@@ -102,6 +102,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         );
         break;
 
+      case url.includes('chat.mistral.ai'):
+        fillAndClick(
+            'textarea[placeholder="Send a message..."]',
+            'button[aria-label="Send message"]',
+            prompt
+        );
+        break;
+
       case url.includes('perplexity.ai'):
         waitForElement('div[id="ask-input"]', (input) => {
           simulatePaste(input, prompt);
